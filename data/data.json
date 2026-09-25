@@ -1,6 +1,6 @@
 {
   "sheet": "Foglio1",
-  "rows": 2,
+  "rows": 3,
   "cols": 3,
   "stats": {
     "images": 3
@@ -62,7 +62,23 @@
       "mime": "image/jpeg",
       "kb": 25,
       "src": "img/C2.jpg?v=57c7c6c8"
+    },
+    {
+      "ref": "A3",
+      "row": 2,
+      "col": 0,
+      "bg": "#ffffff",
+      "type": "text",
+      "value": "wee alura"
+    },
+    {
+      "ref": "B3",
+      "row": 2,
+      "col": 1,
+      "bg": "#ffffff",
+      "type": "text",
+      "value": "ragasssi come stai?"
     }
   ],
-  "updated": "2026-09-25T10:04:09.713Z"
+  "updated": "2026-09-25T10:12:18.915Z"
 }
