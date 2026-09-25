@@ -1,7 +1,7 @@
 {
   "sheet": "Foglio1",
-  "rows": 12,
-  "cols": 8,
+  "rows": 17,
+  "cols": 11,
   "stats": {
     "images": 8
   },
@@ -71,6 +71,30 @@
       "value": "#540d6e"
     },
     {
+      "ref": "I1",
+      "row": 0,
+      "col": 8,
+      "bg": "#0ead69",
+      "type": "color",
+      "value": "#0ead69"
+    },
+    {
+      "ref": "J1",
+      "row": 0,
+      "col": 9,
+      "bg": "#f4a261",
+      "type": "color",
+      "value": "#f4a261"
+    },
+    {
+      "ref": "K1",
+      "row": 0,
+      "col": 10,
+      "bg": "#fee440",
+      "type": "color",
+      "value": "#fee440"
+    },
+    {
       "ref": "A2",
       "row": 1,
       "col": 0,
@@ -116,8 +140,8 @@
       "row": 1,
       "col": 4,
       "bg": "#f28482",
-      "type": "color",
-      "value": "#f28482"
+      "type": "text",
+      "value": "lekker"
     },
     {
       "ref": "F2",
@@ -132,8 +156,8 @@
       "row": 1,
       "col": 6,
       "bg": "#f6bd60",
-      "type": "color",
-      "value": "#f6bd60"
+      "type": "text",
+      "value": "lekker"
     },
     {
       "ref": "H2",
@@ -142,6 +166,30 @@
       "bg": "#f28482",
       "type": "color",
       "value": "#f28482"
+    },
+    {
+      "ref": "I2",
+      "row": 1,
+      "col": 8,
+      "bg": "#84a59d",
+      "type": "color",
+      "value": "#84a59d"
+    },
+    {
+      "ref": "J2",
+      "row": 1,
+      "col": 9,
+      "bg": "#f6bd60",
+      "type": "text",
+      "value": "lekker"
+    },
+    {
+      "ref": "K2",
+      "row": 1,
+      "col": 10,
+      "bg": "#3bceac",
+      "type": "color",
+      "value": "#3bceac"
     },
     {
       "ref": "A3",
@@ -206,6 +254,30 @@
       "bg": "#fee440",
       "type": "color",
       "value": "#fee440"
+    },
+    {
+      "ref": "I3",
+      "row": 2,
+      "col": 8,
+      "bg": "#1d3557",
+      "type": "color",
+      "value": "#1d3557"
+    },
+    {
+      "ref": "J3",
+      "row": 2,
+      "col": 9,
+      "bg": "#e76f51",
+      "type": "color",
+      "value": "#e76f51"
+    },
+    {
+      "ref": "K3",
+      "row": 2,
+      "col": 10,
+      "bg": "#e9c46a",
+      "type": "color",
+      "value": "#e9c46a"
     },
     {
       "ref": "A4",
@@ -278,6 +350,30 @@
       "value": "#3bceac"
     },
     {
+      "ref": "I4",
+      "row": 3,
+      "col": 8,
+      "bg": "#ee4266",
+      "type": "text",
+      "value": "lekker"
+    },
+    {
+      "ref": "J4",
+      "row": 3,
+      "col": 9,
+      "bg": "#540d6e",
+      "type": "color",
+      "value": "#540d6e"
+    },
+    {
+      "ref": "K4",
+      "row": 3,
+      "col": 10,
+      "bg": "#00bbf9",
+      "type": "color",
+      "value": "#00bbf9"
+    },
+    {
       "ref": "A5",
       "row": 4,
       "col": 0,
@@ -343,6 +439,30 @@
       "bg": "#e9c46a",
       "type": "color",
       "value": "#e9c46a"
+    },
+    {
+      "ref": "I5",
+      "row": 4,
+      "col": 8,
+      "bg": "#264653",
+      "type": "color",
+      "value": "#264653"
+    },
+    {
+      "ref": "J5",
+      "row": 4,
+      "col": 9,
+      "bg": "#f28482",
+      "type": "color",
+      "value": "#f28482"
+    },
+    {
+      "ref": "K5",
+      "row": 4,
+      "col": 10,
+      "bg": "#6a994e",
+      "type": "color",
+      "value": "#6a994e"
     },
     {
       "ref": "A6",
@@ -412,6 +532,30 @@
       "value": "#00bbf9"
     },
     {
+      "ref": "I6",
+      "row": 5,
+      "col": 8,
+      "bg": "#f15bb5",
+      "type": "color",
+      "value": "#f15bb5"
+    },
+    {
+      "ref": "J6",
+      "row": 5,
+      "col": 9,
+      "bg": "#fee440",
+      "type": "color",
+      "value": "#fee440"
+    },
+    {
+      "ref": "K6",
+      "row": 5,
+      "col": 10,
+      "bg": "#f4a261",
+      "type": "color",
+      "value": "#f4a261"
+    },
+    {
       "ref": "A7",
       "row": 6,
       "col": 0,
@@ -464,8 +608,8 @@
       "row": 6,
       "col": 6,
       "bg": "#3bceac",
-      "type": "color",
-      "value": "#3bceac"
+      "type": "text",
+      "value": "lekker"
     },
     {
       "ref": "H7",
@@ -474,6 +618,30 @@
       "bg": "#6a994e",
       "type": "color",
       "value": "#6a994e"
+    },
+    {
+      "ref": "I7",
+      "row": 6,
+      "col": 8,
+      "bg": "#ffd23f",
+      "type": "color",
+      "value": "#ffd23f"
+    },
+    {
+      "ref": "J7",
+      "row": 6,
+      "col": 9,
+      "bg": "#3bceac",
+      "type": "color",
+      "value": "#3bceac"
+    },
+    {
+      "ref": "K7",
+      "row": 6,
+      "col": 10,
+      "bg": "#3bceac",
+      "type": "text",
+      "value": "lekker"
     },
     {
       "ref": "A8",
@@ -540,6 +708,30 @@
       "value": "#1155cc"
     },
     {
+      "ref": "I8",
+      "row": 7,
+      "col": 8,
+      "bg": "#2a9d8f",
+      "type": "color",
+      "value": "#2a9d8f"
+    },
+    {
+      "ref": "J8",
+      "row": 7,
+      "col": 9,
+      "bg": "#e9c46a",
+      "type": "color",
+      "value": "#e9c46a"
+    },
+    {
+      "ref": "K8",
+      "row": 7,
+      "col": 10,
+      "bg": "#e9c46a",
+      "type": "color",
+      "value": "#e9c46a"
+    },
+    {
       "ref": "A9",
       "row": 8,
       "col": 0,
@@ -552,8 +744,8 @@
       "row": 8,
       "col": 1,
       "bg": "#00bbf9",
-      "type": "color",
-      "value": "#00bbf9"
+      "type": "text",
+      "value": "lekker"
     },
     {
       "ref": "C9",
@@ -568,8 +760,8 @@
       "row": 8,
       "col": 3,
       "bg": "#fee440",
-      "type": "color",
-      "value": "#fee440"
+      "type": "text",
+      "value": "lekker"
     },
     {
       "ref": "E9",
@@ -602,6 +794,30 @@
       "bg": "#1c4587",
       "type": "color",
       "value": "#1c4587"
+    },
+    {
+      "ref": "I9",
+      "row": 8,
+      "col": 8,
+      "bg": "#1155cc",
+      "type": "color",
+      "value": "#1155cc"
+    },
+    {
+      "ref": "J9",
+      "row": 8,
+      "col": 9,
+      "bg": "#540d6e",
+      "type": "color",
+      "value": "#540d6e"
+    },
+    {
+      "ref": "K9",
+      "row": 8,
+      "col": 10,
+      "bg": "#1d3557",
+      "type": "color",
+      "value": "#1d3557"
     },
     {
       "ref": "A10",
@@ -668,6 +884,30 @@
       "value": "#3c78d8"
     },
     {
+      "ref": "I10",
+      "row": 9,
+      "col": 8,
+      "bg": "#3c78d8",
+      "type": "color",
+      "value": "#3c78d8"
+    },
+    {
+      "ref": "J10",
+      "row": 9,
+      "col": 9,
+      "bg": "#1c4587",
+      "type": "color",
+      "value": "#1c4587"
+    },
+    {
+      "ref": "K10",
+      "row": 9,
+      "col": 10,
+      "bg": "#ee4266",
+      "type": "color",
+      "value": "#ee4266"
+    },
+    {
       "ref": "A11",
       "row": 10,
       "col": 0,
@@ -732,6 +972,30 @@
       "value": "#a4c2f4"
     },
     {
+      "ref": "I11",
+      "row": 10,
+      "col": 8,
+      "bg": "#a4c2f4",
+      "type": "color",
+      "value": "#a4c2f4"
+    },
+    {
+      "ref": "J11",
+      "row": 10,
+      "col": 9,
+      "bg": "#3c78d8",
+      "type": "color",
+      "value": "#3c78d8"
+    },
+    {
+      "ref": "K11",
+      "row": 10,
+      "col": 10,
+      "bg": "#264653",
+      "type": "color",
+      "value": "#264653"
+    },
+    {
       "ref": "A12",
       "row": 11,
       "col": 0,
@@ -760,8 +1024,8 @@
       "row": 11,
       "col": 3,
       "bg": "#00bbf9",
-      "type": "color",
-      "value": "#00bbf9"
+      "type": "text",
+      "value": "lekker"
     },
     {
       "ref": "E12",
@@ -797,7 +1061,471 @@
       "mime": "image/jpeg",
       "kb": 882,
       "src": "img/H12.jpg?v=99a6ac0d"
+    },
+    {
+      "ref": "I12",
+      "row": 11,
+      "col": 8,
+      "bg": "#a4c2f4",
+      "type": "color",
+      "value": "#a4c2f4"
+    },
+    {
+      "ref": "J12",
+      "row": 11,
+      "col": 9,
+      "bg": "#3c78d8",
+      "type": "text",
+      "value": "lekker"
+    },
+    {
+      "ref": "K12",
+      "row": 11,
+      "col": 10,
+      "bg": "#1c4587",
+      "type": "color",
+      "value": "#1c4587"
+    },
+    {
+      "ref": "A13",
+      "row": 12,
+      "col": 0,
+      "bg": "#1d3557",
+      "type": "color",
+      "value": "#1d3557"
+    },
+    {
+      "ref": "B13",
+      "row": 12,
+      "col": 1,
+      "bg": "#e76f51",
+      "type": "color",
+      "value": "#e76f51"
+    },
+    {
+      "ref": "C13",
+      "row": 12,
+      "col": 2,
+      "bg": "#8ecae6",
+      "type": "color",
+      "value": "#8ecae6"
+    },
+    {
+      "ref": "D13",
+      "row": 12,
+      "col": 3,
+      "bg": "#6a994e",
+      "type": "color",
+      "value": "#6a994e"
+    },
+    {
+      "ref": "E13",
+      "row": 12,
+      "col": 4,
+      "bg": "#e9c46a",
+      "type": "color",
+      "value": "#e9c46a"
+    },
+    {
+      "ref": "F13",
+      "row": 12,
+      "col": 5,
+      "bg": "#3c78d8",
+      "type": "color",
+      "value": "#3c78d8"
+    },
+    {
+      "ref": "G13",
+      "row": 12,
+      "col": 6,
+      "bg": "#a4c2f4",
+      "type": "color",
+      "value": "#a4c2f4"
+    },
+    {
+      "ref": "H13",
+      "row": 12,
+      "col": 7,
+      "bg": "#a4c2f4",
+      "type": "color",
+      "value": "#a4c2f4"
+    },
+    {
+      "ref": "I13",
+      "row": 12,
+      "col": 8,
+      "bg": "#a4c2f4",
+      "type": "color",
+      "value": "#a4c2f4"
+    },
+    {
+      "ref": "J13",
+      "row": 12,
+      "col": 9,
+      "bg": "#3c78d8",
+      "type": "color",
+      "value": "#3c78d8"
+    },
+    {
+      "ref": "K13",
+      "row": 12,
+      "col": 10,
+      "bg": "#ffd23f",
+      "type": "color",
+      "value": "#ffd23f"
+    },
+    {
+      "ref": "A14",
+      "row": 13,
+      "col": 0,
+      "bg": "#ee4266",
+      "type": "color",
+      "value": "#ee4266"
+    },
+    {
+      "ref": "B14",
+      "row": 13,
+      "col": 1,
+      "bg": "#540d6e",
+      "type": "color",
+      "value": "#540d6e"
+    },
+    {
+      "ref": "C14",
+      "row": 13,
+      "col": 2,
+      "bg": "#0ead69",
+      "type": "color",
+      "value": "#0ead69"
+    },
+    {
+      "ref": "D14",
+      "row": 13,
+      "col": 3,
+      "bg": "#f4a261",
+      "type": "color",
+      "value": "#f4a261"
+    },
+    {
+      "ref": "E14",
+      "row": 13,
+      "col": 4,
+      "bg": "#00bbf9",
+      "type": "color",
+      "value": "#00bbf9"
+    },
+    {
+      "ref": "F14",
+      "row": 13,
+      "col": 5,
+      "bg": "#1c4587",
+      "type": "color",
+      "value": "#1c4587"
+    },
+    {
+      "ref": "G14",
+      "row": 13,
+      "col": 6,
+      "bg": "#3c78d8",
+      "type": "color",
+      "value": "#3c78d8"
+    },
+    {
+      "ref": "H14",
+      "row": 13,
+      "col": 7,
+      "bg": "#3c78d8",
+      "type": "color",
+      "value": "#3c78d8"
+    },
+    {
+      "ref": "I14",
+      "row": 13,
+      "col": 8,
+      "bg": "#3c78d8",
+      "type": "color",
+      "value": "#3c78d8"
+    },
+    {
+      "ref": "J14",
+      "row": 13,
+      "col": 9,
+      "bg": "#1c4587",
+      "type": "color",
+      "value": "#1c4587"
+    },
+    {
+      "ref": "K14",
+      "row": 13,
+      "col": 10,
+      "bg": "#2a9d8f",
+      "type": "color",
+      "value": "#2a9d8f"
+    },
+    {
+      "ref": "A15",
+      "row": 14,
+      "col": 0,
+      "bg": "#e9c46a",
+      "type": "color",
+      "value": "#e9c46a"
+    },
+    {
+      "ref": "B15",
+      "row": 14,
+      "col": 1,
+      "bg": "#264653",
+      "type": "color",
+      "value": "#264653"
+    },
+    {
+      "ref": "C15",
+      "row": 14,
+      "col": 2,
+      "bg": "#f28482",
+      "type": "color",
+      "value": "#f28482"
+    },
+    {
+      "ref": "D15",
+      "row": 14,
+      "col": 3,
+      "bg": "#f4a261",
+      "type": "color",
+      "value": "#f4a261"
+    },
+    {
+      "ref": "E15",
+      "row": 14,
+      "col": 4,
+      "bg": "#2a9d8f",
+      "type": "color",
+      "value": "#2a9d8f"
+    },
+    {
+      "ref": "F15",
+      "row": 14,
+      "col": 5,
+      "bg": "#e9c46a",
+      "type": "color",
+      "value": "#e9c46a"
+    },
+    {
+      "ref": "G15",
+      "row": 14,
+      "col": 6,
+      "bg": "#1155cc",
+      "type": "color",
+      "value": "#1155cc"
+    },
+    {
+      "ref": "H15",
+      "row": 14,
+      "col": 7,
+      "bg": "#1c4587",
+      "type": "color",
+      "value": "#1c4587"
+    },
+    {
+      "ref": "I15",
+      "row": 14,
+      "col": 8,
+      "bg": "#1155cc",
+      "type": "color",
+      "value": "#1155cc"
+    },
+    {
+      "ref": "J15",
+      "row": 14,
+      "col": 9,
+      "bg": "#e9c46a",
+      "type": "color",
+      "value": "#e9c46a"
+    },
+    {
+      "ref": "K15",
+      "row": 14,
+      "col": 10,
+      "bg": "#9b5de5",
+      "type": "color",
+      "value": "#9b5de5"
+    },
+    {
+      "ref": "A16",
+      "row": 15,
+      "col": 0,
+      "bg": "#00bbf9",
+      "type": "color",
+      "value": "#00bbf9"
+    },
+    {
+      "ref": "B16",
+      "row": 15,
+      "col": 1,
+      "bg": "#f15bb5",
+      "type": "color",
+      "value": "#f15bb5"
+    },
+    {
+      "ref": "C16",
+      "row": 15,
+      "col": 2,
+      "bg": "#fee440",
+      "type": "color",
+      "value": "#fee440"
+    },
+    {
+      "ref": "D16",
+      "row": 15,
+      "col": 3,
+      "bg": "#3bceac",
+      "type": "color",
+      "value": "#3bceac"
+    },
+    {
+      "ref": "E16",
+      "row": 15,
+      "col": 4,
+      "bg": "#ee4266",
+      "type": "color",
+      "value": "#ee4266"
+    },
+    {
+      "ref": "F16",
+      "row": 15,
+      "col": 5,
+      "bg": "#540d6e",
+      "type": "text",
+      "value": "lekker"
+    },
+    {
+      "ref": "G16",
+      "row": 15,
+      "col": 6,
+      "bg": "#e9c46a",
+      "type": "color",
+      "value": "#e9c46a"
+    },
+    {
+      "ref": "H16",
+      "row": 15,
+      "col": 7,
+      "bg": "#1155cc",
+      "type": "text",
+      "value": "lekker"
+    },
+    {
+      "ref": "I16",
+      "row": 15,
+      "col": 8,
+      "bg": "#ee4266",
+      "type": "color",
+      "value": "#ee4266"
+    },
+    {
+      "ref": "J16",
+      "row": 15,
+      "col": 9,
+      "bg": "#540d6e",
+      "type": "color",
+      "value": "#540d6e"
+    },
+    {
+      "ref": "K16",
+      "row": 15,
+      "col": 10,
+      "bg": "#8ecae6",
+      "type": "color",
+      "value": "#8ecae6"
+    },
+    {
+      "ref": "A17",
+      "row": 16,
+      "col": 0,
+      "bg": "#6a994e",
+      "type": "color",
+      "value": "#6a994e"
+    },
+    {
+      "ref": "B17",
+      "row": 16,
+      "col": 1,
+      "bg": "#ffd23f",
+      "type": "color",
+      "value": "#ffd23f"
+    },
+    {
+      "ref": "C17",
+      "row": 16,
+      "col": 2,
+      "bg": "#3bceac",
+      "type": "text",
+      "value": "lekker"
+    },
+    {
+      "ref": "D17",
+      "row": 16,
+      "col": 3,
+      "bg": "#e9c46a",
+      "type": "color",
+      "value": "#e9c46a"
+    },
+    {
+      "ref": "E17",
+      "row": 16,
+      "col": 4,
+      "bg": "#264653",
+      "type": "color",
+      "value": "#264653"
+    },
+    {
+      "ref": "F17",
+      "row": 16,
+      "col": 5,
+      "bg": "#f28482",
+      "type": "color",
+      "value": "#f28482"
+    },
+    {
+      "ref": "G17",
+      "row": 16,
+      "col": 6,
+      "bg": "#540d6e",
+      "type": "color",
+      "value": "#540d6e"
+    },
+    {
+      "ref": "H17",
+      "row": 16,
+      "col": 7,
+      "bg": "#e9c46a",
+      "type": "color",
+      "value": "#e9c46a"
+    },
+    {
+      "ref": "I17",
+      "row": 16,
+      "col": 8,
+      "bg": "#264653",
+      "type": "color",
+      "value": "#264653"
+    },
+    {
+      "ref": "J17",
+      "row": 16,
+      "col": 9,
+      "bg": "#f28482",
+      "type": "text",
+      "value": "lekker"
+    },
+    {
+      "ref": "K17",
+      "row": 16,
+      "col": 10,
+      "bg": "#0ead69",
+      "type": "color",
+      "value": "#0ead69"
     }
   ],
-  "updated": "2026-09-25T14:00:34.061Z"
+  "updated": "2026-09-25T14:03:26.975Z"
 }
