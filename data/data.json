@@ -115,9 +115,9 @@
       "ref": "A4",
       "row": 3,
       "col": 0,
-      "bg": "#00ffff",
+      "bg": "#9fc5e8",
       "type": "text",
-      "value": "forza napoli"
+      "value": "Forza Napoli"
     },
     {
       "ref": "B4",
@@ -220,5 +220,5 @@
       "value": "lekker"
     }
   ],
-  "updated": "2026-09-25T13:25:26.241Z"
+  "updated": "2026-09-25T13:31:31.240Z"
 }
