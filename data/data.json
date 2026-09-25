@@ -535,9 +535,9 @@
       "ref": "H8",
       "row": 7,
       "col": 7,
-      "bg": "#f4a261",
+      "bg": "#1155cc",
       "type": "color",
-      "value": "#f4a261"
+      "value": "#1155cc"
     },
     {
       "ref": "A9",
@@ -591,9 +591,9 @@
       "ref": "G9",
       "row": 8,
       "col": 6,
-      "bg": "#540d6e",
+      "bg": "#1155cc",
       "type": "color",
-      "value": "#540d6e"
+      "value": "#1155cc"
     },
     {
       "ref": "H9",
@@ -799,5 +799,5 @@
       "src": "img/H12.jpg?v=99a6ac0d"
     }
   ],
-  "updated": "2026-09-25T13:57:21.509Z"
+  "updated": "2026-09-25T14:00:34.061Z"
 }
