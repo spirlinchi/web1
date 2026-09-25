@@ -2,65 +2,452 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>web1</title>
 <style>
-  :root { --bg:#111; --fg:#eee; --muted:#888; --line:#2a2a2a; }
-  * { box-sizing:border-box; }
-  body { margin:0; padding:16px; background:var(--bg); color:var(--fg); font:14px/1.4 system-ui, sans-serif; }
-  #status { color:var(--muted); margin-bottom:12px; font-size:12px; }
-  #grid { display:grid; gap:4px; }
-  .cell { aspect-ratio:1; border:1px solid var(--line); overflow:hidden; position:relative; display:flex; align-items:center; justify-content:center; padding:6px; font-size:12px; text-align:center; }
-  .cell img { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; }
-  .ref { position:absolute; top:2px; left:4px; font-size:10px; color:var(--muted); mix-blend-mode:difference; z-index:1; }
+  :root {
+    --paper: #ffffff;
+    --paper-2: #f3f3f3;
+    --core: #ffffff;
+    --ink: #1b1a17;
+    --muted: #8a857a;
+    --serif: Arial, Helvetica, sans-serif;
+    --mono: Arial, Helvetica, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: var(--paper); color: var(--ink); }
+  body { font: 13px/1.4 var(--mono); -webkit-font-smoothing: antialiased; }
+  canvas { display: block; touch-action: none; cursor: grab; }
+  canvas.dragging { cursor: grabbing; }
+
+  .ui { position: fixed; pointer-events: none; z-index: 2; background: var(--paper); padding: 6px 9px; }
+  .ui:empty { display: none; }
+  .ui a, .ui button { pointer-events: auto; }
+  #title { top: 12px; left: 12px; font: 40px/1 var(--serif); letter-spacing: -0.03em; }
+  #meta { top: 12px; right: 12px; text-align: right; color: var(--muted); font-size: 11px; line-height: 1.6; text-transform: uppercase; letter-spacing: 0.04em; }
+  #meta a { color: var(--ink); }
+  #row { bottom: 12px; right: 12px; font-size: 11px; color: var(--muted); letter-spacing: 0.04em; }
+  #hint { bottom: 12px; left: 12px; font-size: 11px; color: var(--muted); letter-spacing: 0.04em; }
+
+  #detail {
+    position: fixed; inset: 0; z-index: 5; display: none;
+    background: color-mix(in srgb, var(--paper) 92%, transparent);
+    backdrop-filter: blur(6px);
+    align-items: center; justify-content: center; padding: 48px 16px;
+  }
+  #detail.open { display: flex; }
+  #detail figure { margin: 0; max-width: min(720px, 100%); max-height: 100%; display: flex; flex-direction: column; gap: 10px; }
+  #detail .ref { font-size: 11px; color: var(--muted); letter-spacing: 0.06em; }
+  #detail img { max-width: 100%; max-height: 75vh; object-fit: contain; display: block; }
+  #detail .swatch { width: min(420px, 80vw); aspect-ratio: 1 / 1.3; }
+  #detail .text { font: clamp(28px, 6vw, 64px)/1.05 var(--serif); letter-spacing: -0.02em; overflow-wrap: anywhere; }
+  #detail button { position: absolute; top: 16px; right: 20px; background: none; border: 0; font: 11px var(--mono); letter-spacing: 0.06em; color: var(--ink); cursor: pointer; text-transform: uppercase; }
+
+  @media (max-width: 600px) {
+    #title { font-size: 32px; left: 16px; }
+    #meta { right: 16px; }
+    #hint { left: 16px; }
+    #row { right: 16px; }
+  }
 </style>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js" } }
+</script>
 </head>
 <body>
-<div id="status">Carico…</div>
-<div id="grid"></div>
-<script>
-const DATA = 'data/data.json';
-const $ = s => document.querySelector(s);
-let lastUpdated = null;
+<div id="title" class="ui">web1</div>
+<div id="meta" class="ui">carico…</div>
+<div id="hint" class="ui">scroll ↕ · trascina ↔ ↕ · clic per aprire</div>
+<div id="row" class="ui"></div>
+<div id="detail"><button type="button">chiudi ✕</button><figure></figure></div>
 
+
+<script type="module">
+import * as THREE from 'three';
+
+// ─── Impostazioni ─────────────────────────────────────────────────────────────
+const CONFIG = {
+  DATA_URL: 'data/data.json',
+  SHEET_URL: '',        // link allo Sheet pubblico (facoltativo): compare in alto a destra
+  MIN_SIDES: 24,        // quanti pannelli attorno all'equatore (minimo); le colonne si ripetono per riempirli
+  REPEAT_COLS: true,    // true = A B C A B C… tutto intorno; false = colonne vuote dopo l'ultima
+  ASPECT: 1.3,          // altezza/larghezza del pannello all'equatore (verticale, come una copertina)
+  GAP_PX: 1,            // fuga tra i pannelli, in pixel sullo schermo
+  RADIUS: 5,
+  TEX_W: 384,           // risoluzione texture
+  POLL_MS: 60000,       // ogni quanto controllare nuovi dati
+};
+
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const PAPER = css('--paper'), PAPER_2 = css('--paper-2'), INK = css('--ink'), MUTED = css('--muted'), CORE = css('--core');
+const FONT = css('--serif');
+const $ = s => document.querySelector(s);
+const mod = (a, n) => ((a % n) + n) % n;
+
+// ─── Scena ────────────────────────────────────────────────────────────────────
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+document.body.prepend(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(CORE);
+const camera = new THREE.PerspectiveCamera(70, 1, 0.05, 100);
+camera.position.set(0, 0, 0);
+camera.lookAt(0, 0, 1);
+const globe = new THREE.Group();
+scene.add(globe);
+
+// guscio dietro i pannelli: nelle fughe si vede una linea scura, come la griglia di un foglio
+globe.add(new THREE.Mesh(
+  new THREE.SphereGeometry(CONFIG.RADIUS * 1.05, 64, 32),
+  new THREE.MeshBasicMaterial({ color: CORE, side: THREE.BackSide }),
+));
+
+function resize() {
+  const w = innerWidth, h = innerHeight;
+  renderer.setSize(w, h);
+  camera.aspect = w / h;
+  camera.fov = w < h ? 85 : 72;   // più ampio in verticale su mobile
+  camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize);
+resize();
+
+// ─── Texture dei pannelli ─────────────────────────────────────────────────────
+const imgCache = new Map();
+function loadImage(src) {
+  if (!imgCache.has(src)) {
+    imgCache.set(src, new Promise(res => {
+      const im = new Image();
+      im.onload = () => res(im);
+      im.onerror = () => res(null);
+      im.src = src;
+    }));
+  }
+  return imgCache.get(src);
+}
+
+function luminance(hex) {
+  const c = new THREE.Color(hex);
+  return 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
+}
+
+// Testo che riempie tutto il pannello: sceglie quante righe usare in base alle
+// proporzioni, poi stira ogni riga fino ai bordi (larghezza e altezza).
+function drawStretchedText(g, text, x, y, w, h, color) {
+  g.font = `100px ${FONT}`;
+  const words = text.split(/\s+/).filter(Boolean);
+  if (!words.length) return;
+
+  const measure = s => g.measureText(s).width;
+  const space = measure(' ');
+  const total = words.reduce((a, wd) => a + measure(wd), 0) + space * (words.length - 1);
+  const m = g.measureText('Hg');
+  const lineH = m.actualBoundingBoxAscent + m.actualBoundingBoxDescent;
+
+  let best = null;
+  for (let k = 1; k <= words.length; k++) {
+    const lines = wrapBalanced(words, k, total / k, measure, space);
+    const widest = Math.max(...lines.map(measure));
+    const distortion = Math.abs(Math.log((w / widest) / ((h / lines.length) / lineH)));
+    if (!best || distortion < best.distortion) best = { lines, distortion };
+  }
+
+  g.fillStyle = color;
+  g.textBaseline = 'alphabetic';
+  const slot = h / best.lines.length;
+  best.lines.forEach((line, i) => {
+    const lm = g.measureText(line);
+    const asc = lm.actualBoundingBoxAscent, desc = lm.actualBoundingBoxDescent;
+    const lw = lm.actualBoundingBoxLeft + lm.actualBoundingBoxRight;
+    g.save();
+    g.translate(x, y + i * slot);
+    g.scale(w / lw, slot / (asc + desc));
+    g.fillText(line, lm.actualBoundingBoxLeft, asc);
+    g.restore();
+  });
+}
+
+function wrapBalanced(words, k, target, measure, space) {
+  const lines = [];
+  let cur = [], curW = 0;
+  words.forEach((wd, i) => {
+    const ww = measure(wd);
+    const remainingLines = k - lines.length - 1;
+    if (cur.length && curW + space + ww > target * 1.08 && remainingLines > 0 && words.length - i >= remainingLines) {
+      lines.push(cur.join(' ')); cur = []; curW = 0;
+    }
+    curW += (cur.length ? space : 0) + ww;
+    cur.push(wd);
+  });
+  if (cur.length) lines.push(cur.join(' '));
+  return lines;
+}
+
+function newCanvas() {
+  const cv = document.createElement('canvas');
+  cv.width = CONFIG.TEX_W;
+  cv.height = Math.round(CONFIG.TEX_W * CONFIG.ASPECT);
+  return cv;
+}
+
+function toTexture(cv) {
+  const tex = new THREE.CanvasTexture(cv);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  return tex;
+}
+
+async function makeTexture(cell) {
+  const cv = newCanvas();
+  const W = cv.width, H = cv.height;
+  const g = cv.getContext('2d');
+
+  let bg = PAPER;
+  if (cell.type === 'color') bg = cell.value;
+  else if (cell.bg && cell.bg.toLowerCase() !== '#ffffff') bg = cell.bg;
+  g.fillStyle = bg;
+  g.fillRect(0, 0, W, H);
+  const dark = luminance(bg) < 0.45;
+  const pad = W * 0.06;
+
+  if (cell.type === 'image') {
+    const im = await loadImage(cell.src ? 'data/' + cell.src : cell.url);
+    if (im) {
+      const s = Math.max(W / im.width, H / im.height);  // "cover"
+      g.drawImage(im, (W - im.width * s) / 2, (H - im.height * s) / 2, im.width * s, im.height * s);
+    }
+  } else if (cell.type === 'text') {
+    drawStretchedText(g, cell.value, pad, pad * 1.9, W - pad * 2, H - pad * 2.9, dark ? PAPER : INK);
+  }
+
+  // riferimento della cella, come nello Sheet
+  g.font = `${Math.round(W * 0.032)}px ${FONT}`;
+  g.textBaseline = 'top';
+  if (cell.type === 'image') {
+    const tw = g.measureText(cell.ref).width;
+    g.fillStyle = PAPER;
+    g.fillRect(pad * 0.6, pad * 0.6, tw + pad * 0.6, W * 0.032 + pad * 0.5);
+    g.fillStyle = INK;
+  } else {
+    g.fillStyle = dark ? 'rgba(241,237,228,.75)' : MUTED;
+  }
+  g.fillText(cell.ref, pad * 0.9, pad * 0.85);
+  return toTexture(cv);
+}
+
+const emptyTex = (() => {
+  const cv = newCanvas();
+  const g = cv.getContext('2d');
+  g.fillStyle = PAPER_2;
+  g.fillRect(0, 0, cv.width, cv.height);
+  return toTexture(cv);
+})();
+
+// ─── Dati → texture per cella ─────────────────────────────────────────────────
+let sheet = { rows: 1, cols: 1, byPos: new Map() };
+let textures = new Map();   // "r,c" → texture
+
+async function prepare(data) {
+  const byPos = new Map(data.cells.map(c => [c.row + ',' + c.col, c]));
+  const made = await Promise.all(data.cells.map(c => makeTexture(c).then(t => [c.row + ',' + c.col, t])));
+  textures.forEach(t => t.dispose());
+  textures = new Map(made);
+  sheet = { rows: Math.max(1, data.rows), cols: Math.max(1, data.cols), byPos };
+  buildGlobe();
+}
+
+// ─── La sfera ─────────────────────────────────────────────────────────────────
+// Bande di latitudine dal polo nord al polo sud; ogni banda ha N pannelli.
+// Scrollando, le righe dello Sheet scorrono da una banda all'altra (in loop).
+let N = CONFIG.MIN_SIDES, dLat = 0.3, bands = 10;
+let slots = [];   // { mesh, geo, k, c }
+
+function buildGlobe() {
+  slots.forEach(s => { globe.remove(s.mesh); s.geo.dispose(); s.mesh.material.dispose(); });
+  slots = [];
+
+  N = CONFIG.REPEAT_COLS
+    ? sheet.cols * Math.ceil(CONFIG.MIN_SIDES / sheet.cols)
+    : Math.max(CONFIG.MIN_SIDES, sheet.cols);
+  dLat = (2 * Math.PI / N) * CONFIG.ASPECT;
+  bands = Math.ceil(Math.PI / dLat);
+
+  for (let k = 0; k <= bands; k++) {           // una banda in più per lo scorrimento
+    for (let c = 0; c < N; c++) {
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(12), 3));
+      geo.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(8), 2));
+      geo.setIndex([0, 2, 1, 1, 2, 3]);
+      const mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: emptyTex, side: THREE.DoubleSide }));
+      mesh.frustumCulled = false;
+      globe.add(mesh);
+      slots.push({ mesh, geo, k, c });
+    }
+  }
+}
+
+const point = (lat, lon, out, i) => {
+  const R = CONFIG.RADIUS;
+  out[i] = R * Math.cos(lat) * Math.sin(lon);
+  out[i + 1] = R * Math.sin(lat);
+  out[i + 2] = R * Math.cos(lat) * Math.cos(lon);
+};
+
+function layoutGlobe(offset) {
+  const whole = Math.floor(offset), frac = offset - whole;
+  const step = 2 * Math.PI / N;
+  const px = THREE.MathUtils.degToRad(camera.fov) / innerHeight;   // un pixel, in radianti
+  const gapLat = px * CONFIG.GAP_PX / 2;
+  const mid = Math.floor(bands / 2);
+
+  slots.forEach(s => {
+    // latitudine della banda (senza tagli) e taglio ai poli
+    const top0 = Math.PI / 2 - (s.k - frac) * dLat;
+    const bot0 = top0 - dLat;
+    const top = Math.min(Math.PI / 2, top0 - gapLat), bot = Math.max(-Math.PI / 2, bot0 + gapLat);
+    if (top <= bot) { s.mesh.visible = false; return; }
+    s.mesh.visible = true;
+
+    // colonne: da dentro A, B, C… vanno da sinistra a destra
+    const gapLon = Math.min(step / 4, gapLat / Math.max(0.05, Math.cos((top + bot) / 2)));  // 1px anche verso i poli
+    const lonL = -s.c * step - gapLon, lonR = -(s.c + 1) * step + gapLon;
+    const pos = s.geo.attributes.position.array;
+    point(top, lonL, pos, 0); point(top, lonR, pos, 3);
+    point(bot, lonL, pos, 6); point(bot, lonR, pos, 9);
+    s.geo.attributes.position.needsUpdate = true;
+
+    const vTop = (top - bot0) / dLat, vBot = (bot - bot0) / dLat;  // UV tagliate ai poli
+    s.geo.attributes.uv.array.set([0, vTop, 1, vTop, 0, vBot, 1, vBot]);
+    s.geo.attributes.uv.needsUpdate = true;
+    s.geo.computeBoundingSphere();
+
+    // quale cella dello Sheet mostra questo pannello
+    const row = mod(s.k + whole - mid, sheet.rows);
+    const col = CONFIG.REPEAT_COLS ? s.c % sheet.cols : s.c;
+    const key = row + ',' + col;
+    const tex = col < sheet.cols ? textures.get(key) || emptyTex : emptyTex;
+    if (s.mesh.material.map !== tex) { s.mesh.material.map = tex; s.mesh.material.needsUpdate = true; }
+    s.cell = sheet.byPos.get(key) || null;
+
+    // ombreggiatura: più scuri i pannelli che non ti guardano
+    const latC = (top + bot) / 2, lonC = (lonL + lonR) / 2 + view.rot;
+    const facing = Math.cos(latC) * Math.cos(lonC);
+    s.mesh.material.color.setScalar(0.7 + 0.3 * Math.max(0, facing));
+  });
+}
+
+// ─── Dati ─────────────────────────────────────────────────────────────────────
+let lastUpdated = null;
 async function load() {
   try {
-    const d = await (await fetch(DATA + '?t=' + Date.now())).json();
-    if (d.updated !== lastUpdated) { lastUpdated = d.updated; render(d); }
+    const data = await (await fetch(CONFIG.DATA_URL + '?t=' + Date.now())).json();
+    if (data.updated === lastUpdated) return;
+    lastUpdated = data.updated;
+    await prepare(data);
+    const when = new Date(data.updated).toLocaleString('it-IT', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+    $('#meta').innerHTML = `${data.cells.length} celle · ${data.rows} righe × ${data.cols} colonne<br>aggiornato ${when}`
+      + (CONFIG.SHEET_URL ? `<br><a href="${CONFIG.SHEET_URL}" target="_blank" rel="noopener">contribuisci ↗</a>` : '');
   } catch (e) {
-    $('#status').textContent = 'Nessun dato ancora pubblicato (' + e.message + ')';
+    if (!lastUpdated) $('#meta').textContent = 'nessun dato (' + e.message + ')';
   }
 }
-
-function render(d) {
-  $('#status').textContent = `${d.cells.length} celle · aggiornato ${new Date(d.updated).toLocaleString('it-IT')}`;
-  const grid = $('#grid');
-  grid.style.gridTemplateColumns = `repeat(${d.cols}, minmax(60px, 1fr))`;
-  grid.innerHTML = '';
-  for (let r = 0; r < d.rows; r++) for (let c = 0; c < d.cols; c++) {
-    const el = document.createElement('div');
-    el.className = 'cell';
-    const cell = d.cells.find(x => x.row === r && x.col === c);
-    if (cell) {
-      el.innerHTML = `<span class="ref">${cell.ref}</span>`;
-      if (cell.type === 'image') {
-        const img = new Image();
-        img.src = cell.src ? 'data/' + cell.src : cell.url;
-        img.alt = cell.ref;
-        el.appendChild(img);
-      } else if (cell.type === 'color') {
-        el.style.background = cell.value;
-      } else {
-        el.append(cell.value || '');
-        if (cell.bg && cell.bg !== '#ffffff') el.style.background = cell.bg;
-      }
-    }
-    grid.appendChild(el);
-  }
-}
-
 load();
-setInterval(load, 60000); // controlla nuovi dati ogni minuto
+setInterval(load, CONFIG.POLL_MS);
+
+// ─── Navigazione ──────────────────────────────────────────────────────────────
+// rot = rotazione orizzontale (colonne), off = scorrimento verticale (righe). Entrambi in loop.
+const view = { rot: 0, rotT: 0, off: 0, offT: 0, vRot: 0, vOff: 0 };
+
+addEventListener('wheel', e => {
+  e.preventDefault();
+  view.offT += e.deltaY * 0.004;
+  view.rotT += e.deltaX * 0.002;
+}, { passive: false });
+
+const el = renderer.domElement;
+let drag = null;
+el.addEventListener('pointerdown', e => {
+  el.setPointerCapture(e.pointerId);
+  drag = { x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY };
+  view.vRot = view.vOff = 0;
+  el.classList.add('dragging');
+});
+el.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+  drag.x = e.clientX; drag.y = e.clientY;
+  const k = 1 / Math.max(innerWidth, 600);
+  view.vRot = -dx * k * 2.2;
+  view.rotT += view.vRot;
+  view.vOff = -dy * k * 6;             // drag verticale: fa scorrere le righe
+  view.offT += view.vOff;
+});
+el.addEventListener('pointerup', e => {
+  el.classList.remove('dragging');
+  if (!drag) return;
+  if (Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) < 5) pick(e.clientX, e.clientY);
+  drag = null;
+});
+
+addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeDetail();
+  if (e.key === 'ArrowLeft') view.rotT -= 2 * Math.PI / N;
+  if (e.key === 'ArrowRight') view.rotT += 2 * Math.PI / N;
+  if (e.key === 'ArrowUp') view.offT -= 1;
+  if (e.key === 'ArrowDown') view.offT += 1;
+});
+
+// ─── Dettaglio al clic ────────────────────────────────────────────────────────
+const ray = new THREE.Raycaster();
+function pick(x, y) {
+  ray.setFromCamera(new THREE.Vector2(x / innerWidth * 2 - 1, -(y / innerHeight) * 2 + 1), camera);
+  const meshes = slots.filter(s => s.mesh.visible).map(s => s.mesh);
+  const hit = ray.intersectObjects(meshes)[0];
+  const slot = hit && slots.find(s => s.mesh === hit.object);
+  if (slot?.cell) openDetail(slot.cell);
+}
+function openDetail(cell) {
+  const fig = $('#detail figure');
+  fig.innerHTML = `<div class="ref">${cell.ref} · ${cell.type}</div>`;
+  if (cell.type === 'image') {
+    const im = new Image();
+    im.src = cell.src ? 'data/' + cell.src : cell.url;
+    im.alt = cell.ref;
+    fig.appendChild(im);
+  } else if (cell.type === 'color') {
+    fig.insertAdjacentHTML('beforeend', `<div class="swatch" style="background:${cell.value}"></div><div class="ref">${cell.value}</div>`);
+  } else {
+    const t = document.createElement('div');
+    t.className = 'text';
+    t.textContent = cell.value;
+    fig.appendChild(t);
+  }
+  $('#detail').classList.add('open');
+}
+function closeDetail() { $('#detail').classList.remove('open'); }
+$('#detail').addEventListener('click', closeDetail);
+
+// ─── Loop ─────────────────────────────────────────────────────────────────────
+function frame() {
+  if (!drag) {                      // inerzia dopo il trascinamento
+    view.rotT += view.vRot; view.vRot *= 0.94;
+    view.offT += view.vOff; view.vOff *= 0.9;
+  }
+  view.rot += (view.rotT - view.rot) * 0.1;
+  view.off += (view.offT - view.off) * 0.1;
+
+  globe.rotation.y = view.rot;
+  if (slots.length) layoutGlobe(view.off);
+
+  const row = mod(Math.round(view.off), sheet.rows) + 1;
+  $('#row').textContent = `riga ${row} / ${sheet.rows}`;
+
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+frame();
 </script>
 </body>
 </html>
