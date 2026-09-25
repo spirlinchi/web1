@@ -78,7 +78,15 @@
       "bg": "#ffffff",
       "type": "text",
       "value": "ragasssi come stai?"
+    },
+    {
+      "ref": "C3",
+      "row": 2,
+      "col": 2,
+      "bg": "#ffffff",
+      "type": "text",
+      "value": "ciao"
     }
   ],
-  "updated": "2026-09-25T10:12:18.915Z"
+  "updated": "2026-09-25T10:15:20.331Z"
 }
