@@ -1,0 +1,68 @@
+{
+  "sheet": "Foglio1",
+  "rows": 2,
+  "cols": 3,
+  "stats": {
+    "images": 3
+  },
+  "cells": [
+    {
+      "ref": "A1",
+      "row": 0,
+      "col": 0,
+      "bg": "#ffffff",
+      "type": "text",
+      "value": "buonasera"
+    },
+    {
+      "ref": "B1",
+      "row": 0,
+      "col": 1,
+      "bg": "#1155cc",
+      "type": "color",
+      "value": "#1155cc"
+    },
+    {
+      "ref": "C1",
+      "row": 0,
+      "col": 2,
+      "bg": "#741b47",
+      "type": "color",
+      "value": "#741b47"
+    },
+    {
+      "ref": "A2",
+      "row": 1,
+      "col": 0,
+      "bg": "#ffffff",
+      "type": "image",
+      "source": "in-cella",
+      "mime": "image/jpeg",
+      "kb": 107,
+      "src": "img/A2.jpg?v=1c19bdc9"
+    },
+    {
+      "ref": "B2",
+      "row": 1,
+      "col": 1,
+      "bg": "#ffffff",
+      "type": "image",
+      "source": "in-cella",
+      "mime": "image/jpeg",
+      "kb": 3,
+      "src": "img/B2.jpg?v=6203bbb3"
+    },
+    {
+      "ref": "C2",
+      "row": 1,
+      "col": 2,
+      "bg": "#ffffff",
+      "type": "image",
+      "source": "in-cella",
+      "mime": "image/jpeg",
+      "kb": 25,
+      "src": "img/C2.jpg?v=57c7c6c8"
+    }
+  ],
+  "updated": "2026-09-25T10:04:09.713Z"
+}
