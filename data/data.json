@@ -1,7 +1,7 @@
 {
   "sheet": "Foglio1",
-  "rows": 6,
-  "cols": 4,
+  "rows": 14,
+  "cols": 6,
   "stats": {
     "images": 7
   },
@@ -218,7 +218,391 @@
       "bg": "#ffff00",
       "type": "text",
       "value": "lekker"
+    },
+    {
+      "ref": "A7",
+      "row": 6,
+      "col": 0,
+      "bg": "#ffd23f",
+      "type": "text",
+      "value": "I only know 25 letters of the alphabet. I don't know y."
+    },
+    {
+      "ref": "B7",
+      "row": 6,
+      "col": 1,
+      "bg": "#3bceac",
+      "type": "text",
+      "value": "If you replace every part of a ship, is it still the same ship?"
+    },
+    {
+      "ref": "C7",
+      "row": 6,
+      "col": 2,
+      "bg": "#ee4266",
+      "type": "text",
+      "value": "Octopuses have three hearts."
+    },
+    {
+      "ref": "D7",
+      "row": 6,
+      "col": 3,
+      "bg": "#540d6e",
+      "type": "text",
+      "value": "I'm reading a book about anti-gravity. It's impossible to put down."
+    },
+    {
+      "ref": "E7",
+      "row": 6,
+      "col": 4,
+      "bg": "#0ead69",
+      "type": "text",
+      "value": "Do you and I see the same red?"
+    },
+    {
+      "ref": "F7",
+      "row": 6,
+      "col": 5,
+      "bg": "#f4a261",
+      "type": "text",
+      "value": "Botanically, bananas are berries and strawberries aren't."
+    },
+    {
+      "ref": "A8",
+      "row": 7,
+      "col": 0,
+      "bg": "#2a9d8f",
+      "type": "text",
+      "value": "Why don't eggs tell jokes? They'd crack each other up."
+    },
+    {
+      "ref": "B8",
+      "row": 7,
+      "col": 1,
+      "bg": "#e9c46a",
+      "type": "text",
+      "value": "Is a hole something or nothing?"
+    },
+    {
+      "ref": "C8",
+      "row": 7,
+      "col": 2,
+      "bg": "#264653",
+      "type": "text",
+      "value": "A day on Venus is longer than a year on Venus."
+    },
+    {
+      "ref": "D8",
+      "row": 7,
+      "col": 3,
+      "bg": "#f28482",
+      "type": "text",
+      "value": "I used to hate facial hair, but then it grew on me."
+    },
+    {
+      "ref": "E8",
+      "row": 7,
+      "col": 4,
+      "bg": "#84a59d",
+      "type": "text",
+      "value": "If nobody remembers it, did it really happen?"
+    },
+    {
+      "ref": "F8",
+      "row": 7,
+      "col": 5,
+      "bg": "#f6bd60",
+      "type": "text",
+      "value": "Wombats produce cube-shaped poop."
+    },
+    {
+      "ref": "A9",
+      "row": 8,
+      "col": 0,
+      "bg": "#9b5de5",
+      "type": "text",
+      "value": "What do you call a fake noodle? An impasta."
+    },
+    {
+      "ref": "B9",
+      "row": 8,
+      "col": 1,
+      "bg": "#00bbf9",
+      "type": "text",
+      "value": "Can you step into the same river twice?"
+    },
+    {
+      "ref": "C9",
+      "row": 8,
+      "col": 2,
+      "bg": "#f15bb5",
+      "type": "text",
+      "value": "Sharks have been around longer than trees."
+    },
+    {
+      "ref": "D9",
+      "row": 8,
+      "col": 3,
+      "bg": "#fee440",
+      "type": "text",
+      "value": "I'd tell you a construction joke, but I'm still working on it."
+    },
+    {
+      "ref": "E9",
+      "row": 8,
+      "col": 4,
+      "bg": "#1d3557",
+      "type": "text",
+      "value": "Are you the same person you were ten years ago?"
+    },
+    {
+      "ref": "F9",
+      "row": 8,
+      "col": 5,
+      "bg": "#e76f51",
+      "type": "text",
+      "value": "There are more trees on Earth than stars in the Milky Way."
+    },
+    {
+      "ref": "A10",
+      "row": 9,
+      "col": 0,
+      "bg": "#8ecae6",
+      "type": "text",
+      "value": "Why did the scarecrow win an award? He was outstanding in his field."
+    },
+    {
+      "ref": "B10",
+      "row": 9,
+      "col": 1,
+      "bg": "#6a994e",
+      "type": "text",
+      "value": "Is it possible to think about nothing?"
+    },
+    {
+      "ref": "C10",
+      "row": 9,
+      "col": 2,
+      "bg": "#ffd23f",
+      "type": "text",
+      "value": "Butterflies taste with their feet."
+    },
+    {
+      "ref": "D10",
+      "row": 9,
+      "col": 3,
+      "bg": "#3bceac",
+      "type": "text",
+      "value": "What do you call cheese that isn't yours? Nacho cheese."
+    },
+    {
+      "ref": "E10",
+      "row": 9,
+      "col": 4,
+      "bg": "#ee4266",
+      "type": "text",
+      "value": "Would you want to know the date of your death?"
+    },
+    {
+      "ref": "F10",
+      "row": 9,
+      "col": 5,
+      "bg": "#540d6e",
+      "type": "text",
+      "value": "A teaspoon of neutron star would weigh about a billion tonnes."
+    },
+    {
+      "ref": "A11",
+      "row": 10,
+      "col": 0,
+      "bg": "#0ead69",
+      "type": "text",
+      "value": "Why can't a bicycle stand on its own? It's two tired."
+    },
+    {
+      "ref": "B11",
+      "row": 10,
+      "col": 1,
+      "bg": "#f4a261",
+      "type": "text",
+      "value": "If a copy of you had all your memories, would it be you?"
+    },
+    {
+      "ref": "C11",
+      "row": 10,
+      "col": 2,
+      "bg": "#2a9d8f",
+      "type": "text",
+      "value": "Sunlight takes about 8 minutes to reach Earth."
+    },
+    {
+      "ref": "D11",
+      "row": 10,
+      "col": 3,
+      "bg": "#e9c46a",
+      "type": "text",
+      "value": "What do you call a bear with no teeth? A gummy bear."
+    },
+    {
+      "ref": "E11",
+      "row": 10,
+      "col": 4,
+      "bg": "#264653",
+      "type": "text",
+      "value": "Is a lie okay if no one ever finds out?"
+    },
+    {
+      "ref": "F11",
+      "row": 10,
+      "col": 5,
+      "bg": "#f28482",
+      "type": "text",
+      "value": "Tardigrades have survived exposure to open space."
+    },
+    {
+      "ref": "A12",
+      "row": 11,
+      "col": 0,
+      "bg": "#84a59d",
+      "type": "text",
+      "value": "I told my wife she was drawing her eyebrows too high. She looked surprised."
+    },
+    {
+      "ref": "B12",
+      "row": 11,
+      "col": 1,
+      "bg": "#f6bd60",
+      "type": "text",
+      "value": "Do we choose our tastes, or do they choose us?"
+    },
+    {
+      "ref": "C12",
+      "row": 11,
+      "col": 2,
+      "bg": "#9b5de5",
+      "type": "text",
+      "value": "Babies have more bones than adults."
+    },
+    {
+      "ref": "D12",
+      "row": 11,
+      "col": 3,
+      "bg": "#00bbf9",
+      "type": "text",
+      "value": "Why was the math book sad? It had too many problems."
+    },
+    {
+      "ref": "E12",
+      "row": 11,
+      "col": 4,
+      "bg": "#f15bb5",
+      "type": "text",
+      "value": "What makes a place feel like home?"
+    },
+    {
+      "ref": "F12",
+      "row": 11,
+      "col": 5,
+      "bg": "#fee440",
+      "type": "text",
+      "value": "Lightning is about five times hotter than the surface of the Sun."
+    },
+    {
+      "ref": "A13",
+      "row": 12,
+      "col": 0,
+      "bg": "#1d3557",
+      "type": "text",
+      "value": "How does a penguin build its house? Igloos it together."
+    },
+    {
+      "ref": "B13",
+      "row": 12,
+      "col": 1,
+      "bg": "#e76f51",
+      "type": "text",
+      "value": "Is time passing, or are we?"
+    },
+    {
+      "ref": "C13",
+      "row": 12,
+      "col": 2,
+      "bg": "#8ecae6",
+      "type": "text",
+      "value": "Venus spins in the opposite direction to most planets."
+    },
+    {
+      "ref": "D13",
+      "row": 12,
+      "col": 3,
+      "bg": "#6a994e",
+      "type": "text",
+      "value": "I don't trust stairs. They're always up to something."
+    },
+    {
+      "ref": "E13",
+      "row": 12,
+      "col": 4,
+      "bg": "#ffd23f",
+      "type": "text",
+      "value": "Can something be beautiful if no one ever sees it?"
+    },
+    {
+      "ref": "F13",
+      "row": 12,
+      "col": 5,
+      "bg": "#3bceac",
+      "type": "text",
+      "value": "Your stomach lining renews itself every few days."
+    },
+    {
+      "ref": "A14",
+      "row": 13,
+      "col": 0,
+      "bg": "#ee4266",
+      "type": "text",
+      "value": "I'm on a seafood diet. I see food and I eat it."
+    },
+    {
+      "ref": "B14",
+      "row": 13,
+      "col": 1,
+      "bg": "#540d6e",
+      "type": "text",
+      "value": "What would you do if you knew you couldn't fail?"
+    },
+    {
+      "ref": "C14",
+      "row": 13,
+      "col": 2,
+      "bg": "#0ead69",
+      "type": "text",
+      "value": "At its triple point, water can boil and freeze at the same time."
+    },
+    {
+      "ref": "D14",
+      "row": 13,
+      "col": 3,
+      "bg": "#f4a261",
+      "type": "text",
+      "value": "Did you get a haircut? No, I got them all cut."
+    },
+    {
+      "ref": "E14",
+      "row": 13,
+      "col": 4,
+      "bg": "#2a9d8f",
+      "type": "text",
+      "value": "Does a spreadsheet dream of its cells?"
+    },
+    {
+      "ref": "F14",
+      "row": 13,
+      "col": 5,
+      "bg": "#e9c46a",
+      "type": "text",
+      "value": "Properly sealed honey can stay edible for centuries."
     }
   ],
-  "updated": "2026-09-25T13:31:31.240Z"
+  "updated": "2026-09-25T13:41:26.309Z"
 }
