@@ -1,6 +1,6 @@
 {
   "sheet": "Foglio1",
-  "rows": 3,
+  "rows": 4,
   "cols": 3,
   "stats": {
     "images": 3
@@ -86,7 +86,15 @@
       "bg": "#ffffff",
       "type": "text",
       "value": "ciao"
+    },
+    {
+      "ref": "A4",
+      "row": 3,
+      "col": 0,
+      "bg": "#ffffff",
+      "type": "text",
+      "value": "forza napoli"
     }
   ],
-  "updated": "2026-09-25T11:18:32.568Z"
+  "updated": "2026-09-25T11:33:19.100Z"
 }
