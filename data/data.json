@@ -99,7 +99,7 @@
       "ref": "C3",
       "row": 2,
       "col": 2,
-      "bg": "#ffffff",
+      "bg": "#ffff00",
       "type": "text",
       "value": "ciao"
     },
@@ -115,7 +115,7 @@
       "ref": "A4",
       "row": 3,
       "col": 0,
-      "bg": "#ffffff",
+      "bg": "#00ffff",
       "type": "text",
       "value": "forza napoli"
     },
@@ -209,10 +209,10 @@
       "ref": "D6",
       "row": 5,
       "col": 3,
-      "bg": "#ffffff",
+      "bg": "#ffff00",
       "type": "text",
       "value": "lekker"
     }
   ],
-  "updated": "2026-09-25T11:48:18.130Z"
+  "updated": "2026-09-25T11:58:48.628Z"
 }
