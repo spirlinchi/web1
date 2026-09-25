@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="it">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -22,6 +22,7 @@
 
   .ui { position: fixed; pointer-events: none; z-index: 2; background: var(--paper); padding: 6px 9px; }
   .ui:empty { display: none; }
+  #meta, #row { display: none; }   /* info su celle/righe e riga corrente: nascoste */
   .ui a, .ui button { pointer-events: auto; }
   #title { top: 12px; left: 12px; font: 40px/1 var(--serif); letter-spacing: -0.03em; }
   #meta { top: 12px; right: 12px; text-align: right; color: var(--muted); font-size: 11px; line-height: 1.6; text-transform: uppercase; letter-spacing: 0.04em; }
@@ -29,19 +30,20 @@
   #row { bottom: 12px; right: 12px; font-size: 11px; color: var(--muted); letter-spacing: 0.04em; }
   #hint { bottom: 12px; left: 12px; font-size: 11px; color: var(--muted); letter-spacing: 0.04em; }
 
-  #detail {
-    position: fixed; inset: 0; z-index: 5; display: none;
-    background: color-mix(in srgb, var(--paper) 92%, transparent);
-    backdrop-filter: blur(6px);
-    align-items: center; justify-content: center; padding: 48px 16px;
+  #detail { position: fixed; inset: 0; z-index: 5; display: none; cursor: zoom-out; }
+  #detail.open { display: block; }
+  #detail .caption, #detail button {
+    position: absolute; background: var(--paper); padding: 6px 9px; font: 11px var(--mono);
+    letter-spacing: 0.06em; color: var(--ink); text-transform: uppercase;
+    opacity: 0; transition: opacity .35s ease;
   }
-  #detail.open { display: flex; }
-  #detail figure { margin: 0; max-width: min(720px, 100%); max-height: 100%; display: flex; flex-direction: column; gap: 10px; }
-  #detail .ref { font-size: 11px; color: var(--muted); letter-spacing: 0.06em; }
-  #detail img { max-width: 100%; max-height: 75vh; object-fit: contain; display: block; }
-  #detail .swatch { width: min(420px, 80vw); aspect-ratio: 1 / 1.3; }
-  #detail .text { font: clamp(28px, 6vw, 64px)/1.05 var(--serif); letter-spacing: -0.02em; overflow-wrap: anywhere; }
-  #detail button { position: absolute; top: 16px; right: 20px; background: none; border: 0; font: 11px var(--mono); letter-spacing: 0.06em; color: var(--ink); cursor: pointer; text-transform: uppercase; }
+  #detail.shown .caption, #detail.shown button { opacity: 1; }
+  #detail .caption { left: 50%; bottom: 12px; transform: translateX(-50%); display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; max-width: calc(100% - 24px); }
+  #detail .caption span { white-space: nowrap; }
+  #detail .caption b { font-weight: normal; color: var(--muted); margin-right: 6px; }
+  #detail button { top: 12px; right: 12px; border: 0; cursor: pointer; }
+  #meta, #hint, #row { transition: opacity .35s ease; }
+  body:has(#detail.shown) #meta, body:has(#detail.shown) #hint, body:has(#detail.shown) #row { opacity: 0; }
 
   @media (max-width: 600px) {
     #title { font-size: 32px; left: 16px; }
@@ -55,11 +57,10 @@
 </script>
 </head>
 <body>
-<div id="title" class="ui">web1</div>
-<div id="meta" class="ui">carico…</div>
-<div id="hint" class="ui">scroll ↕ · trascina ↔ ↕ · clic per aprire</div>
+<div id="meta" class="ui">loading…</div>
+<div id="hint" class="ui">scroll ↕ · drag ↔ ↕ · click to open</div>
 <div id="row" class="ui"></div>
-<div id="detail"><button type="button">chiudi ✕</button><figure></figure></div>
+<div id="detail"><button type="button">close ✕</button><div class="caption"></div></div>
 
 
 <script type="module">
@@ -69,13 +70,17 @@ import * as THREE from 'three';
 const CONFIG = {
   DATA_URL: 'data/data.json',
   SHEET_URL: '',        // link allo Sheet pubblico (facoltativo): compare in alto a destra
-  MIN_SIDES: 24,        // quanti pannelli attorno all'equatore (minimo); le colonne si ripetono per riempirli
-  REPEAT_COLS: true,    // true = A B C A B C… tutto intorno; false = colonne vuote dopo l'ultima
+  MIN_SIDES: 24,        // quanti pannelli attorno all'equatore (minimo)
+  LINE_HEIGHT: 0.95,    // interlinea del testo nella card aperta (0.95 = 95%)
+  OPEN_MS: 450,         // durata dell'apertura/chiusura al clic, in millisecondi
+  SPIN: 0,              // scrollando in basso la sfera gira anche un po' in senso orario (radianti per riga; 0 = no)
+                        // ogni riga ripete i suoi elementi tutto intorno; le righe vuote vengono saltate
   ASPECT: 1.3,          // altezza/larghezza del pannello all'equatore (verticale, come una copertina)
   GAP_PX: 1,            // fuga tra i pannelli, in pixel sullo schermo
   RADIUS: 5,
   TEX_W: 384,           // risoluzione texture
   POLL_MS: 60000,       // ogni quanto controllare nuovi dati
+  SHOW_REFS: false,     // mostra il riferimento della cella (A1, B2…) sui pannelli
 };
 
 const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
@@ -96,9 +101,11 @@ const camera = new THREE.PerspectiveCamera(70, 1, 0.05, 100);
 camera.position.set(0, 0, 0);
 camera.lookAt(0, 0, 1);
 const globe = new THREE.Group();
+globe.rotation.order = 'XYZ';   // prima gira sulle colonne, poi si inclina verso di te
 scene.add(globe);
 
 // guscio dietro i pannelli: nelle fughe si vede una linea scura, come la griglia di un foglio
+// guscio dietro i pannelli: è il colore che si vede nelle fughe
 globe.add(new THREE.Mesh(
   new THREE.SphereGeometry(CONFIG.RADIUS * 1.05, 64, 32),
   new THREE.MeshBasicMaterial({ color: CORE, side: THREE.BackSide }),
@@ -133,13 +140,15 @@ function luminance(hex) {
   return 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
 }
 
-// Testo che riempie tutto il pannello: sceglie quante righe usare in base alle
+// I testi sono disegnati parola per parola: ogni parola ha posizione e scala (sx, sy).
+// Così si può passare in modo continuo dal testo stirato a quello normale.
+
+// Testo stirato che riempie tutto il pannello: sceglie quante righe usare in base alle
 // proporzioni, poi stira ogni riga fino ai bordi (larghezza e altezza).
-function drawStretchedText(g, text, x, y, w, h, color) {
+function stretchedLayout(g, text, x, y, w, h) {
   g.font = `100px ${FONT}`;
   const words = text.split(/\s+/).filter(Boolean);
-  if (!words.length) return;
-
+  if (!words.length) return [];
   const measure = s => g.measureText(s).width;
   const space = measure(' ');
   const total = words.reduce((a, wd) => a + measure(wd), 0) + space * (words.length - 1);
@@ -154,19 +163,91 @@ function drawStretchedText(g, text, x, y, w, h, color) {
     if (!best || distortion < best.distortion) best = { lines, distortion };
   }
 
-  g.fillStyle = color;
-  g.textBaseline = 'alphabetic';
-  const slot = h / best.lines.length;
+  const out = [], slot = h / best.lines.length;
   best.lines.forEach((line, i) => {
     const lm = g.measureText(line);
     const asc = lm.actualBoundingBoxAscent, desc = lm.actualBoundingBoxDescent;
-    const lw = lm.actualBoundingBoxLeft + lm.actualBoundingBoxRight;
+    const sx = w / (lm.actualBoundingBoxLeft + lm.actualBoundingBoxRight), sy = slot / (asc + desc);
+    let prefix = '';
+    line.split(' ').forEach(wd => {
+      const off = prefix ? measure(prefix + ' ') : 0;
+      out.push({ text: wd, x: x + (lm.actualBoundingBoxLeft + off) * sx, y: y + i * slot + asc * sy, sx, sy });
+      prefix = prefix ? prefix + ' ' + wd : wd;
+    });
+  });
+  return out;
+}
+
+// Testo senza deformazioni, il più grande possibile: a capo sulle parole,
+// allineato a sinistra e centrato in verticale.
+function fittedLayout(g, text, x, y, w, h) {
+  g.font = `100px ${FONT}`;
+  const words = text.split(/\s+/).filter(Boolean);
+  if (!words.length) return [];
+  const measure = s => g.measureText(s).width;   // a corpo 100: le misure scalano in proporzione
+  const wrap = size => {
+    const k = size / 100, lines = [];
+    let cur = '';
+    words.forEach(wd => {
+      const test = cur ? cur + ' ' + wd : wd;
+      if (cur && measure(test) * k > w) { lines.push(cur); cur = wd; } else cur = test;
+    });
+    if (cur) lines.push(cur);
+    const fits = Math.max(...lines.map(measure)) * k <= w && lines.length * size * CONFIG.LINE_HEIGHT <= h;
+    return { lines, fits };
+  };
+  let lo = 4, hi = h, best = wrap(lo);
+  for (let i = 0; i < 18; i++) {                 // ricerca del corpo più grande che ci sta
+    const mid = (lo + hi) / 2, l = wrap(mid);
+    if (l.fits) { lo = mid; best = l; } else hi = mid;
+  }
+  const k = lo / 100, lineH = lo * CONFIG.LINE_HEIGHT;
+  const m = g.measureText('Hg');
+  const asc = m.actualBoundingBoxAscent * k, desc = m.actualBoundingBoxDescent * k;
+  const top = y + (h - best.lines.length * lineH) / 2;
+  const out = [];
+  best.lines.forEach((line, i) => {
+    const base = top + i * lineH + (lineH - asc - desc) / 2 + asc;
+    let prefix = '';
+    line.split(' ').forEach(wd => {
+      const off = prefix ? measure(prefix + ' ') * k : 0;
+      out.push({ text: wd, x: x + off, y: base, sx: k, sy: k });
+      prefix = prefix ? prefix + ' ' + wd : wd;
+    });
+  });
+  return out;
+}
+
+function drawWords(g, words, color) {
+  g.font = `100px ${FONT}`;
+  g.fillStyle = color;
+  g.textBaseline = 'alphabetic';
+  words.forEach(wd => {
     g.save();
-    g.translate(x, y + i * slot);
-    g.scale(w / lw, slot / (asc + desc));
-    g.fillText(line, lm.actualBoundingBoxLeft, asc);
+    g.translate(wd.x, wd.y);
+    g.scale(wd.sx, wd.sy);
+    g.fillText(wd.text, 0, 0);
     g.restore();
   });
+}
+
+// da stirato (p = 0) a normale (p = 1): ogni parola scivola e cambia scala
+function drawMorph(g, from, to, p, color) {
+  const L = THREE.MathUtils.lerp;
+  drawWords(g, from.map((a, i) => {
+    const b = to[i] || a;
+    return { text: a.text, x: L(a.x, b.x, p), y: L(a.y, b.y, p), sx: L(a.sx, b.sx, p), sy: L(a.sy, b.sy, p) };
+  }), color);
+}
+
+function textColors(cell) {
+  const bg = cell.bg && cell.bg.toLowerCase() !== '#ffffff' ? cell.bg : PAPER;
+  return { bg, color: luminance(bg) < 0.45 ? PAPER : INK };
+}
+
+function textBox(W, H) {
+  const pad = W * 0.06, top = CONFIG.SHOW_REFS ? pad * 1.9 : pad;
+  return [pad, top, W - pad * 2, H - top - pad];
 }
 
 function wrapBalanced(words, k, target, measure, space) {
@@ -185,10 +266,10 @@ function wrapBalanced(words, k, target, measure, space) {
   return lines;
 }
 
-function newCanvas() {
+function newCanvas(w = CONFIG.TEX_W) {
   const cv = document.createElement('canvas');
-  cv.width = CONFIG.TEX_W;
-  cv.height = Math.round(CONFIG.TEX_W * CONFIG.ASPECT);
+  cv.width = w;
+  cv.height = Math.round(w * CONFIG.ASPECT);
   return cv;
 }
 
@@ -199,8 +280,8 @@ function toTexture(cv) {
   return tex;
 }
 
-async function makeTexture(cell) {
-  const cv = newCanvas();
+async function makeTexture(cell, w, fitted = false) {
+  const cv = newCanvas(w);
   const W = cv.width, H = cv.height;
   const g = cv.getContext('2d');
 
@@ -219,8 +300,9 @@ async function makeTexture(cell) {
       g.drawImage(im, (W - im.width * s) / 2, (H - im.height * s) / 2, im.width * s, im.height * s);
     }
   } else if (cell.type === 'text') {
-    drawStretchedText(g, cell.value, pad, pad * 1.9, W - pad * 2, H - pad * 2.9, dark ? PAPER : INK);
+    drawWords(g, (fitted ? fittedLayout : stretchedLayout)(g, cell.value, ...textBox(W, H)), dark ? PAPER : INK);
   }
+  if (!CONFIG.SHOW_REFS) return toTexture(cv);
 
   // riferimento della cella, come nello Sheet
   g.font = `${Math.round(W * 0.032)}px ${FONT}`;
@@ -246,21 +328,24 @@ const emptyTex = (() => {
 })();
 
 // ─── Dati → texture per cella ─────────────────────────────────────────────────
-let sheet = { rows: 1, cols: 1, byPos: new Map() };
+let sheet = { rows: [] };   // solo le righe con almeno un elemento, ciascuna con le sue celle in ordine
 let textures = new Map();   // "r,c" → texture
 
 async function prepare(data) {
-  const byPos = new Map(data.cells.map(c => [c.row + ',' + c.col, c]));
+  const byRow = new Map();
+  data.cells.forEach(c => { if (!byRow.has(c.row)) byRow.set(c.row, []); byRow.get(c.row).push(c); });
+  const rows = [...byRow.keys()].sort((a, b) => a - b).map(r => byRow.get(r).sort((a, b) => a.col - b.col));
   const made = await Promise.all(data.cells.map(c => makeTexture(c).then(t => [c.row + ',' + c.col, t])));
   textures.forEach(t => t.dispose());
   textures = new Map(made);
-  sheet = { rows: Math.max(1, data.rows), cols: Math.max(1, data.cols), byPos };
+  sheet = { rows };
   buildGlobe();
 }
 
 // ─── La sfera ─────────────────────────────────────────────────────────────────
 // Bande di latitudine dal polo nord al polo sud; ogni banda ha N pannelli.
-// Scrollando, le righe dello Sheet scorrono da una banda all'altra (in loop).
+// Scrollando, le righe dello Sheet scorrono da una banda all'altra (in loop);
+// ogni riga ripete i suoi elementi tutto intorno.
 let N = CONFIG.MIN_SIDES, dLat = 0.3, bands = 10;
 let slots = [];   // { mesh, geo, k, c }
 
@@ -268,9 +353,7 @@ function buildGlobe() {
   slots.forEach(s => { globe.remove(s.mesh); s.geo.dispose(); s.mesh.material.dispose(); });
   slots = [];
 
-  N = CONFIG.REPEAT_COLS
-    ? sheet.cols * Math.ceil(CONFIG.MIN_SIDES / sheet.cols)
-    : Math.max(CONFIG.MIN_SIDES, sheet.cols);
+  N = Math.max(CONFIG.MIN_SIDES, ...sheet.rows.map(r => r.length));
   dLat = (2 * Math.PI / N) * CONFIG.ASPECT;
   bands = Math.ceil(Math.PI / dLat);
 
@@ -308,7 +391,7 @@ function layoutGlobe(offset) {
     const bot0 = top0 - dLat;
     const top = Math.min(Math.PI / 2, top0 - gapLat), bot = Math.max(-Math.PI / 2, bot0 + gapLat);
     if (top <= bot) { s.mesh.visible = false; return; }
-    s.mesh.visible = true;
+    s.mesh.visible = !s.lifted;     // il pannello aperto lascia il suo posto vuoto
 
     // colonne: da dentro A, B, C… vanno da sinistra a destra
     const gapLon = Math.min(step / 4, gapLat / Math.max(0.05, Math.cos((top + bot) / 2)));  // 1px anche verso i poli
@@ -324,12 +407,11 @@ function layoutGlobe(offset) {
     s.geo.computeBoundingSphere();
 
     // quale cella dello Sheet mostra questo pannello
-    const row = mod(s.k + whole - mid, sheet.rows);
-    const col = CONFIG.REPEAT_COLS ? s.c % sheet.cols : s.c;
-    const key = row + ',' + col;
-    const tex = col < sheet.cols ? textures.get(key) || emptyTex : emptyTex;
+    const items = sheet.rows[mod(s.k + whole - mid, sheet.rows.length)];
+    const cell = items[s.c % items.length];            // la riga ripete i suoi elementi
+    const tex = textures.get(cell.row + ',' + cell.col) || emptyTex;
     if (s.mesh.material.map !== tex) { s.mesh.material.map = tex; s.mesh.material.needsUpdate = true; }
-    s.cell = sheet.byPos.get(key) || null;
+    s.cell = cell;
 
     // ombreggiatura: più scuri i pannelli che non ti guardano
     const latC = (top + bot) / 2, lonC = (lonL + lonR) / 2 + view.rot;
@@ -346,11 +428,11 @@ async function load() {
     if (data.updated === lastUpdated) return;
     lastUpdated = data.updated;
     await prepare(data);
-    const when = new Date(data.updated).toLocaleString('it-IT', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
-    $('#meta').innerHTML = `${data.cells.length} celle · ${data.rows} righe × ${data.cols} colonne<br>aggiornato ${when}`
-      + (CONFIG.SHEET_URL ? `<br><a href="${CONFIG.SHEET_URL}" target="_blank" rel="noopener">contribuisci ↗</a>` : '');
+    const when = new Date(data.updated).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+    $('#meta').innerHTML = `${data.cells.length} cells · ${data.rows} rows × ${data.cols} columns<br>updated ${when}`
+      + (CONFIG.SHEET_URL ? `<br><a href="${CONFIG.SHEET_URL}" target="_blank" rel="noopener">contribute ↗</a>` : '');
   } catch (e) {
-    if (!lastUpdated) $('#meta').textContent = 'nessun dato (' + e.message + ')';
+    if (!lastUpdated) $('#meta').textContent = 'no data (' + e.message + ')';
   }
 }
 load();
@@ -358,10 +440,11 @@ setInterval(load, CONFIG.POLL_MS);
 
 // ─── Navigazione ──────────────────────────────────────────────────────────────
 // rot = rotazione orizzontale (colonne), off = scorrimento verticale (righe). Entrambi in loop.
-const view = { rot: 0, rotT: 0, off: 0, offT: 0, vRot: 0, vOff: 0 };
+const view = { rot: 0, rotT: 0, off: 0, offT: 0, vRot: 0, vOff: 0, prevOff: 0 };
 
 addEventListener('wheel', e => {
   e.preventDefault();
+  if (flyer) return;
   view.offT += e.deltaY * 0.004;
   view.rotT += e.deltaX * 0.002;
 }, { passive: false });
@@ -369,7 +452,7 @@ addEventListener('wheel', e => {
 const el = renderer.domElement;
 let drag = null;
 el.addEventListener('pointerdown', e => {
-  el.setPointerCapture(e.pointerId);
+  try { el.setPointerCapture(e.pointerId); } catch (err) { /* puntatore non catturabile: si continua lo stesso */ }
   drag = { x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY };
   view.vRot = view.vOff = 0;
   el.classList.add('dragging');
@@ -393,41 +476,188 @@ el.addEventListener('pointerup', e => {
 
 addEventListener('keydown', e => {
   if (e.key === 'Escape') closeDetail();
+  if (flyer) return;
   if (e.key === 'ArrowLeft') view.rotT -= 2 * Math.PI / N;
   if (e.key === 'ArrowRight') view.rotT += 2 * Math.PI / N;
   if (e.key === 'ArrowUp') view.offT -= 1;
   if (e.key === 'ArrowDown') view.offT += 1;
 });
 
-// ─── Dettaglio al clic ────────────────────────────────────────────────────────
+// ─── Dettaglio al clic: il pannello si stacca dalla sfera e vola al centro ───
 const ray = new THREE.Raycaster();
 function pick(x, y) {
+  if (flyer) return;
   ray.setFromCamera(new THREE.Vector2(x / innerWidth * 2 - 1, -(y / innerHeight) * 2 + 1), camera);
-  const meshes = slots.filter(s => s.mesh.visible).map(s => s.mesh);
-  const hit = ray.intersectObjects(meshes)[0];
+  const hit = ray.intersectObjects(slots.filter(s => s.mesh.visible).map(s => s.mesh))[0];
   const slot = hit && slots.find(s => s.mesh === hit.object);
-  if (slot?.cell) openDetail(slot.cell);
+  if (slot?.cell) openDetail(slot);
 }
-function openDetail(cell) {
-  const fig = $('#detail figure');
-  fig.innerHTML = `<div class="ref">${cell.ref} · ${cell.type}</div>`;
-  if (cell.type === 'image') {
-    const im = new Image();
-    im.src = cell.src ? 'data/' + cell.src : cell.url;
-    im.alt = cell.ref;
-    fig.appendChild(im);
-  } else if (cell.type === 'color') {
-    fig.insertAdjacentHTML('beforeend', `<div class="swatch" style="background:${cell.value}"></div><div class="ref">${cell.value}</div>`);
-  } else {
-    const t = document.createElement('div');
-    t.className = 'text';
-    t.textContent = cell.value;
-    fig.appendChild(t);
-  }
+
+// sfuma la sfera verso il bianco dietro al pannello aperto
+const veil = new THREE.Mesh(
+  new THREE.PlaneGeometry(200, 200),
+  new THREE.MeshBasicMaterial({ color: PAPER, transparent: true, opacity: 0, depthTest: false }),
+);
+veil.rotation.y = Math.PI;
+veil.position.set(0, 0, 3.5);
+veil.renderOrder = 1;
+scene.add(veil);
+
+let flyer = null;   // { mesh, slot, p, v, target, closing }
+const FLY_DIST = 2;
+
+// posizione, rotazione e dimensione attuali del pannello sulla sfera (in coordinate mondo)
+function slotPose(slot) {
+  const a = slot.geo.attributes.position.array;
+  const v = i => new THREE.Vector3(a[i], a[i + 1], a[i + 2]).applyMatrix4(globe.matrixWorld);
+  const tl = v(0), tr = v(3), bl = v(6), br = v(9);
+  const center = tl.clone().add(tr).add(bl).add(br).multiplyScalar(0.25);
+  const right = tr.clone().sub(tl).add(br.clone().sub(bl)).multiplyScalar(0.5);
+  const up = tl.clone().sub(bl).add(tr.clone().sub(br)).multiplyScalar(0.5);
+  const w = right.length(), h = up.length();
+  right.normalize(); up.normalize();
+  const normal = new THREE.Vector3().crossVectors(right, up).normalize();
+  up.crossVectors(normal, right);
+  const quat = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(right, up, normal));
+  return { center, quat, w, h };
+}
+
+// dove arriva: al centro, rivolto verso di te, grande quanto lo schermo permette
+function centerPose() {
+  const viewH = 2 * FLY_DIST * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
+  const h = Math.min(viewH * 0.72, (viewH * camera.aspect * 0.86) * CONFIG.ASPECT);
+  return {
+    center: new THREE.Vector3(0, 0, FLY_DIST).add(camera.position),
+    quat: new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI),
+    w: h / CONFIG.ASPECT, h,
+  };
+}
+
+function openDetail(slot) {
+  const cell = slot.cell;
+  view.rotT = view.rot; view.offT = view.off; view.vRot = view.vOff = 0;   // la sfera si ferma
+
+  // transparent: così viene disegnato dopo il velo (renderOrder 2 > 1), sempre sopra
+  const mat = new THREE.MeshBasicMaterial({ map: slot.mesh.material.map, side: THREE.DoubleSide, depthTest: false, transparent: true });
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), mat);
+  mesh.renderOrder = 2;
+  scene.add(mesh);
+  slot.lifted = true;
+  flyer = { mesh, slot, t: 0, last: performance.now(), target: 1, closing: false };
+
+  // versione in alta risoluzione per quando è al centro
+  // versione "da vicino": alta risoluzione e, per i testi, senza deformazioni.
+  // Compare in dissolvenza sopra al pannello mentre vola al centro.
+  const hiMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, side: THREE.DoubleSide, depthTest: false });
+  const hi = new THREE.Mesh(mesh.geometry, hiMat);
+  hi.renderOrder = 3;
+  hi.visible = false;
+  scene.add(hi);
+  flyer.hi = hi;
+  if (cell.type === 'text') {
+    const cv = newCanvas(1024), g = cv.getContext('2d');
+    const box = textBox(cv.width, cv.height);
+    flyer.morph = {
+      cv, g, ...textColors(cell),
+      from: stretchedLayout(g, cell.value, ...box),
+      to: fittedLayout(g, cell.value, ...box),
+    };
+    flyer.hiTex = toTexture(cv);
+    hiMat.map = flyer.hiTex;
+    hi.visible = true;
+  } else makeTexture(cell, 1024, true).then(tex => {
+    if (flyer?.mesh === mesh) { hiMat.map = tex; hiMat.needsUpdate = true; hi.visible = true; flyer.hiTex = tex; } else tex.dispose();
+  });
+
+  showInfo(cell);
   $('#detail').classList.add('open');
+  requestAnimationFrame(() => $('#detail').classList.add('shown'));
 }
-function closeDetail() { $('#detail').classList.remove('open'); }
+
+// informazioni sotto al pannello aperto
+const TYPE_NAMES = { image: 'image', text: 'text', color: 'colour' };
+async function showInfo(cell) {
+  const info = [['cell', cell.ref], ['type', TYPE_NAMES[cell.type] || cell.type]];
+  if (cell.type === 'image') {
+    if (cell.mime) info.push(['format', cell.mime.replace('image/', '').toUpperCase()]);
+    if (cell.kb) info.push(['size', cell.kb >= 1024 ? (cell.kb / 1024).toFixed(1) + ' MB' : cell.kb + ' KB']);
+    const im = await loadImage(cell.src ? 'data/' + cell.src : cell.url);
+    if (im) info.push(['dimensions', `${im.naturalWidth} × ${im.naturalHeight} px`]);
+  } else if (cell.type === 'text') {
+    info.push(['characters', cell.value.length], ['words', cell.value.split(/\s+/).filter(Boolean).length]);
+  } else if (cell.type === 'color') {
+    const c = new THREE.Color(cell.value);
+    info.push(['hex', cell.value.toUpperCase()], ['rgb', [c.r, c.g, c.b].map(v => Math.round(v * 255)).join(', ')]);
+  }
+  if (cell.added) {
+    info.push(['added', new Date(cell.added).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })]);
+  }
+  const box = $('#detail .caption');
+  box.replaceChildren(...info.map(([k, v]) => {
+    const span = document.createElement('span');
+    const b = document.createElement('b');
+    b.textContent = k;
+    span.append(b, String(v));
+    return span;
+  }));
+}
+
+function closeDetail() {
+  if (!flyer || flyer.closing) return;
+  flyer.closing = true;
+  flyer.target = 0;
+  $('#detail').classList.remove('shown');
+}
 $('#detail').addEventListener('click', closeDetail);
+
+const tmpPos = new THREE.Vector3(), tmpQuat = new THREE.Quaternion();
+function updateFlyer() {
+  if (!flyer) return;
+  // transizione a durata fissa, ease-in-out: parte piano, accelera, rallenta e si ferma (niente molla)
+  const now = performance.now();
+  flyer.t = THREE.MathUtils.clamp(flyer.t + (flyer.target ? 1 : -1) * (now - flyer.last) / CONFIG.OPEN_MS, 0, 1);
+  flyer.last = now;
+  const t = flyer.t;
+  const p = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2, pc = p;
+
+  const from = slotPose(flyer.slot);          // la sfera può ancora assestarsi: seguo il pannello
+  const to = centerPose();
+  tmpPos.lerpVectors(from.center, to.center, p);
+  tmpQuat.slerpQuaternions(from.quat, to.quat, pc);
+  flyer.mesh.position.copy(tmpPos);
+  flyer.mesh.quaternion.copy(tmpQuat);
+  flyer.mesh.scale.set(
+    THREE.MathUtils.lerp(from.w, to.w, p),
+    THREE.MathUtils.lerp(from.h, to.h, p),
+    1,
+  );
+  veil.material.opacity = 0.82 * pc;
+  flyer.hi.position.copy(flyer.mesh.position);
+  flyer.hi.quaternion.copy(flyer.mesh.quaternion);
+  flyer.hi.scale.copy(flyer.mesh.scale);
+  if (flyer.morph) {                  // testo: da stirato a normale, parola per parola
+    const { cv, g, bg, color, from, to } = flyer.morph;
+    g.fillStyle = bg;
+    g.fillRect(0, 0, cv.width, cv.height);
+    drawMorph(g, from, to, pc, color);
+    flyer.hiTex.needsUpdate = true;
+    flyer.hi.material.opacity = 1;
+  } else {
+    flyer.hi.material.opacity = pc;   // immagini e colori: dissolvenza verso l'alta risoluzione
+  }
+
+  if (flyer.closing && t === 0) {   // tornato al suo posto
+    scene.remove(flyer.mesh, flyer.hi);
+    flyer.mesh.geometry.dispose();
+    flyer.mesh.material.dispose();
+    flyer.hi.material.dispose();
+    flyer.hiTex?.dispose();
+    flyer.slot.lifted = false;
+    flyer = null;
+    veil.material.opacity = 0;
+    $('#detail').classList.remove('open');
+  }
+}
 
 // ─── Loop ─────────────────────────────────────────────────────────────────────
 function frame() {
@@ -438,11 +668,19 @@ function frame() {
   view.rot += (view.rotT - view.rot) * 0.1;
   view.off += (view.offT - view.off) * 0.1;
 
-  globe.rotation.y = view.rot;
-  if (slots.length) layoutGlobe(view.off);
+  // un po' di rotazione insieme allo scroll: in basso = senso orario, in alto = antiorario
+  const spin = (view.off - view.prevOff) * CONFIG.SPIN;
+  view.prevOff = view.off;
+  view.rot += spin; view.rotT += spin;
 
-  const row = mod(Math.round(view.off), sheet.rows) + 1;
-  $('#row').textContent = `riga ${row} / ${sheet.rows}`;
+  globe.rotation.y = view.rot;
+  if (slots.length && sheet.rows.length) {
+    layoutGlobe(view.off);
+    globe.updateMatrixWorld();
+    updateFlyer();
+    const items = sheet.rows[mod(Math.round(view.off), sheet.rows.length)];
+    $('#row').textContent = `row ${items[0].row + 1}`;
+  }
 
   renderer.render(scene, camera);
   requestAnimationFrame(frame);
