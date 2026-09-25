@@ -1,6 +1,6 @@
 {
   "sheet": "Foglio1",
-  "rows": 4,
+  "rows": 6,
   "cols": 4,
   "stats": {
     "images": 5
@@ -117,7 +117,7 @@
       "col": 0,
       "bg": "#ffffff",
       "type": "text",
-      "value": "forza napolii"
+      "value": "forza napoli"
     },
     {
       "ref": "B4",
@@ -148,7 +148,71 @@
       "bg": "#d5a6bd",
       "type": "color",
       "value": "#d5a6bd"
+    },
+    {
+      "ref": "A5",
+      "row": 4,
+      "col": 0,
+      "bg": "#ffffff",
+      "type": "text",
+      "value": "salame"
+    },
+    {
+      "ref": "B5",
+      "row": 4,
+      "col": 1,
+      "bg": "#0000ff",
+      "type": "color",
+      "value": "#0000ff"
+    },
+    {
+      "ref": "C5",
+      "row": 4,
+      "col": 2,
+      "bg": "#ffffff",
+      "type": "text",
+      "value": ":("
+    },
+    {
+      "ref": "D5",
+      "row": 4,
+      "col": 3,
+      "bg": "#990000",
+      "type": "color",
+      "value": "#990000"
+    },
+    {
+      "ref": "A6",
+      "row": 5,
+      "col": 0,
+      "bg": "#c27ba0",
+      "type": "color",
+      "value": "#c27ba0"
+    },
+    {
+      "ref": "B6",
+      "row": 5,
+      "col": 1,
+      "bg": "#ffffff",
+      "type": "text",
+      "value": ":)"
+    },
+    {
+      "ref": "C6",
+      "row": 5,
+      "col": 2,
+      "bg": "#4c1130",
+      "type": "color",
+      "value": "#4c1130"
+    },
+    {
+      "ref": "D6",
+      "row": 5,
+      "col": 3,
+      "bg": "#ffffff",
+      "type": "text",
+      "value": "lekker"
     }
   ],
-  "updated": "2026-09-25T11:42:26.556Z"
+  "updated": "2026-09-25T11:48:18.130Z"
 }
