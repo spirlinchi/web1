@@ -3,7 +3,7 @@
   "rows": 6,
   "cols": 4,
   "stats": {
-    "images": 5
+    "images": 7
   },
   "cells": [
     {
@@ -178,8 +178,11 @@
       "row": 4,
       "col": 3,
       "bg": "#990000",
-      "type": "color",
-      "value": "#990000"
+      "type": "image",
+      "source": "in-cella",
+      "mime": "image/jpeg",
+      "kb": 7,
+      "src": "img/D5.jpg?v=0e803dda"
     },
     {
       "ref": "A6",
@@ -202,8 +205,11 @@
       "row": 5,
       "col": 2,
       "bg": "#4c1130",
-      "type": "color",
-      "value": "#4c1130"
+      "type": "image",
+      "source": "in-cella",
+      "mime": "image/jpeg",
+      "kb": 235,
+      "src": "img/C6.jpg?v=41d7bcd2"
     },
     {
       "ref": "D6",
@@ -214,5 +220,5 @@
       "value": "lekker"
     }
   ],
-  "updated": "2026-09-25T11:58:48.628Z"
+  "updated": "2026-09-25T12:02:25.526Z"
 }
